@@ -61,18 +61,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun isNotificationServiceEnabled(context: Context): Boolean {
-        val pkgName = context.packageName
-        val flat = Settings.Secure.getString(context.contentResolver, "enabled_notification_listeners")
-        if (!TextUtils.isEmpty(flat)) {
-            val names = flat.split(":").toTypedArray()
-            for (name in names) {
-                val componentName = name.split("/").toTypedArray()
-                if (TextUtils.equals(pkgName, componentName[0])) {
-                    return true
-                }
-            }
-        }
-        return false
+        val enabledListeners = Settings.Secure.getString(context.contentResolver, "enabled_notification_listeners")
+        val packageName = context.packageName
+        return enabledListeners != null && enabledListeners.contains(packageName)
     }
 
     override fun onRequestPermissionsResult(

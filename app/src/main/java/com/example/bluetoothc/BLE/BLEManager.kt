@@ -21,6 +21,7 @@ import android.bluetooth.BluetoothGattService
 import android.bluetooth.BluetoothManager
 import android.bluetooth.le.BluetoothLeScanner
 import android.bluetooth.le.ScanCallback
+import android.bluetooth.le.ScanFilter
 import android.bluetooth.le.ScanResult
 import android.bluetooth.le.ScanSettings
 import android.location.Address
@@ -119,11 +120,21 @@ class BLEManager(private val context: Context) {
                 //}
             }
         }
+
+        override fun onBatchScanResults(results: List<ScanResult>) {
+            super.onBatchScanResults(results)
+            for (result in results) {
+                val device = result.device
+                // Connect to the device
+                connectToDevice(device)
+            }
+        }
     }
 
     fun startScanning() {
-        val scanSettings = ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build()
-        bluetoothLeScanner.startScan(null, scanSettings, scanCallback)
+        val scanSettings = ScanSettings.Builder().build()
+        val scanFilter = ScanFilter.Builder().build()
+        bluetoothLeScanner.startScan(listOf(scanFilter), scanSettings, scanCallback)
     }
 
     fun connectToDevice(device: BluetoothDevice) {
